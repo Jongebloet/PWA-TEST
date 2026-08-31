@@ -3,9 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="manifest" href="manifest.webmanifest">
+
+    <meta name="theme-color" content="#111111">
+
     <title>Solana Wallet</title>
 </head>
+
 <body>
 
     <h1>Solana Wallet</h1>
@@ -16,12 +21,14 @@
 
     <script>
         const WALLET = "nigger24aL9gzjedPYg8kCACtYiWrjDiiBiUptCiXZ6";
-        const RPC = "https://api.mainnet-beta.solana.com";
 
-        document.getElementById("balanceBtn").onclick = async () => {
-            const balance = document.getElementById("balance");
+        const RPC =
+            "https://mainnet.helius-rpc.com/?api-key=effd806d-2126-4b17-b69d-a68f37ace363";
 
-            balance.textContent = "Loading...";
+        document.getElementById("balanceBtn").addEventListener("click", async () => {
+            const balanceElement = document.getElementById("balance");
+
+            balanceElement.textContent = "Loading...";
 
             try {
                 const response = await fetch(RPC, {
@@ -43,14 +50,16 @@
                     throw new Error(data.error.message);
                 }
 
-                const sol = data.result.value / 1_000_000_000;
+                const lamports = data.result.value;
+                const sol = lamports / 1_000_000_000;
 
-                balance.textContent = `${sol} SOL`;
+                balanceElement.textContent = `${sol} SOL`;
+
             } catch (error) {
                 console.error(error);
-                balance.textContent = "Error: " + error.message;
+                balanceElement.textContent = `Error: ${error.message}`;
             }
-        };
+        });
     </script>
 
 </body>
