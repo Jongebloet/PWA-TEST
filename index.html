@@ -2,17 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PWA Demo App</title>
-    <link rel="manifest" href="./manifest.webmanifest">
-    <script>
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register('./serviceWorker.js');
-        }
-    </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#FFF"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.webmanifest">
+    <title>Solana Wallet</title>
 </head>
 <body>
-    <h1>Hello world</h1>
+
+    <h1>Solana Wallet</h1>
+
+    <button id="balanceBtn">Fetch SOL Balance</button>
+
+    <h2 id="balance">---</h2>
+
+    <script>
+        const WALLET = "nigger24aL9gzjedPYg8kCACtYiWrjDiiBiUptCiXZ6";
+        const RPC = "https://api.mainnet-beta.solana.com";
+
+        document.getElementById("balanceBtn").onclick = async () => {
+            const balance = document.getElementById("balance");
+
+            balance.textContent = "Loading...";
+
+            try {
+                const response = await fetch(RPC, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: "2.0",
+                        id: 1,
+                        method: "getBalance",
+                        params: [WALLET]
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error.message);
+                }
+
+                const sol = data.result.value / 1_000_000_000;
+
+                balance.textContent = `${sol} SOL`;
+            } catch (error) {
+                console.error(error);
+                balance.textContent = "Error: " + error.message;
+            }
+        };
+    </script>
+
 </body>
 </html>
