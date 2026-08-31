@@ -5,61 +5,298 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="manifest" href="manifest.webmanifest">
-
     <meta name="theme-color" content="#111111">
 
-    <title>Solana Wallet</title>
+    <title>Solana Wallet Balances</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #111;
+            color: white;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        #grandTotal {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0 30px;
+        }
+
+        .wallet {
+            background: #1c1c1c;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
+        .pubkey {
+            font-size: 12px;
+            color: #aaa;
+            word-break: break-all;
+        }
+
+        .balance {
+            margin-top: 8px;
+            font-size: 16px;
+        }
+    </style>
 </head>
 
 <body>
 
-    <h1>Solana Wallet</h1>
+    <h1>Solana Wallet Balances</h1>
 
-    <button id="balanceBtn">Fetch SOL Balance</button>
+    <button id="fetchBtn">Fetch Balances</button>
 
-    <h2 id="balance">---</h2>
+    <div id="grandTotal">Total: --- SOL</div>
+
+    <div id="wallets"></div>
 
     <script>
-        const WALLET = "nigger24aL9gzjedPYg8kCACtYiWrjDiiBiUptCiXZ6";
-
         const RPC =
-            "https://mainnet.helius-rpc.com/?api-key=fc22cf83-7f9b-4656-8f83-22b9e377e363";
+            "https://mainnet.helius-rpc.com/?api-key=effd806d-2126-4b17-b69d-a68f37ace363";
 
-        document.getElementById("balanceBtn").addEventListener("click", async () => {
-            const balanceElement = document.getElementById("balance");
+        const WSOL_MINT = "So11111111111111111111111111111111111111112";
 
-            balanceElement.textContent = "Loading...";
+        const wallets = [
+            {
+                index: "MAIN",
+                publicKey: "nigger24aL9gzjedPYg8kCACtYiWrjDiiBiUptCiXZ6"
+            },
+            {
+                index: 0,
+                publicKey: "5uA5SaRfAL27TJeRP7ZJfqRmKrhDudB69o4CvcHMeJsm"
+            },
+            {
+                index: 1,
+                publicKey: "2qKNMo7nu3C4mYCnEGbxndhtszUq3n88ebfqRPswwbZ2"
+            },
+            {
+                index: 2,
+                publicKey: "Ew5ZvEchSaGhc8N5AMMYKAw2ueh8swvEVnwQS3TwUk7K"
+            },
+            {
+                index: 3,
+                publicKey: "4sUmdEpoCAc3XLFr9icSd915f3Ei99RNhm7iVBBqKqzA"
+            },
+            {
+                index: 4,
+                publicKey: "EZpyfQf5QLLJQHazyMRtzCMQ5ixPmvadkPzbWv3uaex5"
+            },
+            {
+                index: 5,
+                publicKey: "25CbzG2mhFMJYhdXyjyG32tvWAPjZFfwuPcwpCyhY4mk"
+            },
+            {
+                index: 6,
+                publicKey: "HnzQ5akcvt7FLfd9HuvP7AdBBKajcKhQAZi8kqTeetUw"
+            },
+            {
+                index: 7,
+                publicKey: "dXmbCoMokJAdxvx4s2MusDSfPz5E1kfeLbFm1TtRDJJ"
+            },
+            {
+                index: 8,
+                publicKey: "AToGrNDmKQhoeG5U83m3CY8rXc3jyLEZ3H5GMVr8QYcf"
+            },
+            {
+                index: 9,
+                publicKey: "AoF4mzAFMswVQxMoUa9PvMuJYaNMiuhj4rhe6h6dmKAz"
+            },
+            {
+                index: 10,
+                publicKey: "4zQnKSf3gF2F3Av2MeTxkmMo57sSFvMZmZRDQyx3GFZ6"
+            },
+            {
+                index: 11,
+                publicKey: "DXADrcqr8UDChmNXcJLsFC7ojkaqShbaNHP1rao68EUs"
+            },
+            {
+                index: 12,
+                publicKey: "BKZ6JFtBMYhNiWYHwS96KkYgAHWtCKLK2fVZaxgPUSju"
+            },
+            {
+                index: 13,
+                publicKey: "2NDYEAwuee5EUjK7CvB8wSPvQsZprXxzPm2g6PGAj3CT"
+            },
+            {
+                index: 14,
+                publicKey: "BLSVRrdERqS1LPP4tyJ2HYghByghWRSnoiojm22C2czz"
+            },
+            {
+                index: 15,
+                publicKey: "69J2HyLoXLbCzLANV4cFqydGLbkqypt51XrJPqvVwWVS"
+            },
+            {
+                index: 16,
+                publicKey: "5ovAXA8fTWLvKesenhwwv58owis9UdcBamo9xqVgBSnz"
+            },
+            {
+                index: 17,
+                publicKey: "3rBLhz6ZieNP2Wq3v6cHyJ6nx3q6aey28b3Gr7DMkvKW"
+            },
+            {
+                index: 18,
+                publicKey: "42pAHoNqWq5qKYLTy8XmJdcvBMDweDd1ejdLXwZVWwob"
+            },
+            {
+                index: 19,
+                publicKey: "FNM1d5H7XskgpDQNz9Dnmw5uRvkPAJ9iM2c7LFy3cZNJ"
+            }
+        ];
+
+        const walletsContainer = document.getElementById("wallets");
+        const grandTotal = document.getElementById("grandTotal");
+        const fetchBtn = document.getElementById("fetchBtn");
+
+        function rpc(method, params) {
+            return fetch(RPC, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    jsonrpc: "2.0",
+                    id: 1,
+                    method,
+                    params
+                })
+            }).then(r => r.json());
+        }
+
+        function format(value) {
+            return value.toFixed(9);
+        }
+
+        async function fetchBalances() {
+            fetchBtn.disabled = true;
+            fetchBtn.textContent = "Loading...";
 
             try {
-                const response = await fetch(RPC, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        jsonrpc: "2.0",
-                        id: 1,
-                        method: "getBalance",
-                        params: [WALLET]
-                    })
-                });
+                // -------------------------------------------------
+                // 1. SOL balances — one getMultipleAccounts call
+                // -------------------------------------------------
 
-                const data = await response.json();
+                const addresses = wallets.map(w => w.publicKey);
 
-                if (data.error) {
-                    throw new Error(data.error.message);
+                const solResult = await rpc("getMultipleAccounts", [
+                    addresses,
+                    {
+                        encoding: "jsonParsed"
+                    }
+                ]);
+
+                if (solResult.error) {
+                    throw new Error(solResult.error.message);
                 }
 
-                const lamports = data.result.value;
-                const sol = lamports / 1_000_000_000;
+                const accounts = solResult.result.value;
 
-                balanceElement.textContent = `${sol} SOL`;
+                // -------------------------------------------------
+                // 2. WSOL balances — one request per wallet
+                // -------------------------------------------------
+
+                const wsolResults = await Promise.all(
+                    wallets.map(wallet =>
+                        rpc("getTokenAccountsByOwner", [
+                            wallet.publicKey,
+                            {
+                                mint: WSOL_MINT
+                            },
+                            {
+                                encoding: "jsonParsed"
+                            }
+                        ])
+                    )
+                );
+
+                let grandTotalSol = 0;
+
+                walletsContainer.innerHTML = "";
+
+                wallets.forEach((wallet, i) => {
+
+                    const account = accounts[i];
+
+                    const sol =
+                        account
+                            ? account.lamports / 1_000_000_000
+                            : 0;
+
+                    let wsol = 0;
+
+                    const tokenResult = wsolResults[i];
+
+                    if (!tokenResult.error) {
+                        const tokenAccounts =
+                            tokenResult.result.value;
+
+                        for (const tokenAccount of tokenAccounts) {
+                            const amount =
+                                tokenAccount.account.data.parsed.info.tokenAmount.uiAmount;
+
+                            wsol += amount || 0;
+                        }
+                    }
+
+                    const total = sol + wsol;
+
+                    grandTotalSol += total;
+
+                    const div = document.createElement("div");
+                    div.className = "wallet";
+
+                    div.innerHTML = `
+                        <strong>Wallet ${wallet.index}</strong>
+
+                        <div class="pubkey">
+                            ${wallet.publicKey}
+                        </div>
+
+                        <div class="balance">
+                            SOL: ${format(sol)}
+                        </div>
+
+                        <div class="balance">
+                            WSOL: ${format(wsol)}
+                        </div>
+
+                        <div class="balance">
+                            <strong>Total: ${format(total)} SOL</strong>
+                        </div>
+                    `;
+
+                    walletsContainer.appendChild(div);
+                });
+
+                grandTotal.textContent =
+                    `Total: ${format(grandTotalSol)} SOL`;
 
             } catch (error) {
                 console.error(error);
-                balanceElement.textContent = `Error: ${error.message}`;
+                grandTotal.textContent =
+                    `Error: ${error.message}`;
             }
-        });
+
+            fetchBtn.disabled = false;
+            fetchBtn.textContent = "Fetch Balances";
+        }
+
+        fetchBtn.addEventListener("click", fetchBalances);
     </script>
 
 </body>
