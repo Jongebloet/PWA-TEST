@@ -4,20 +4,20 @@
     "start_url": "./",
     "display": "standalone",
     "orientation": "portrait",
+    "background_color": "#080b12",
+    "theme_color": "#080b12",
     "icons": [
         {
             "src": "icon-192x192.png",
             "type": "image/png",
             "sizes": "192x192",
-            "purpose": "any"
+            "purpose": "any maskable"
         },
         {
             "src": "icon-512x512.png",
             "type": "image/png",
             "sizes": "512x512",
-            "purpose": "any"
+            "purpose": "any maskable"
         }
-    ],
-    "background_color": "#080b12",
-    "theme_color": "#080b12"
+    ]
 }
