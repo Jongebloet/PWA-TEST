@@ -1,21 +1,23 @@
 {
-    "name": "PWA Demo App",
-    "short_name": "PWADemo",
+    "name": "SOL // COMMAND",
+    "short_name": "SOL",
     "start_url": "./",
     "display": "standalone",
+    "orientation": "portrait",
     "icons": [
         {
             "src": "icon-192x192.png",
             "type": "image/png",
             "sizes": "192x192",
-            "purpose": "maskable any"
+            "purpose": "any"
         },
         {
             "src": "icon-512x512.png",
             "type": "image/png",
-            "sizes": "512x512"
+            "sizes": "512x512",
+            "purpose": "any"
         }
     ],
-    "background_color": "#FFF",
-    "theme_color": "#FFF"
+    "background_color": "#080b12",
+    "theme_color": "#080b12"
 }
