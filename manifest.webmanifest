@@ -7,17 +7,11 @@
     "background_color": "#080b12",
     "theme_color": "#080b12",
     "icons": [
-        {
-            "src": "maskable_icon_x192.png",
-            "type": "image/png",
-            "sizes": "192x192",
-            "purpose": "maskable"
-        },
-        {
-            "src": "maskable_icon_x512.png",
-            "type": "image/png",
-            "sizes": "512x512",
-            "purpose": "maskable"
-        }
-    ]
+  {
+    "purpose": "maskable",
+    "sizes": "1200x1200",
+    "src": "maskable_icon.png",
+    "type": "image/png"
+  }
+]
 }
