@@ -240,7 +240,7 @@
 
         .balances {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 8px;
         }
 
@@ -297,7 +297,7 @@
             }
 
             .balances {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
             }
         }
     </style>
@@ -363,83 +363,103 @@ const wallets = [
     },
     {
         index: 0,
-        publicKey: "5uA5SaRfAL27TJeRP7ZJfqRmKrhDudB69o4CvcHMeJsm"
+        publicKey: "5uA5SaRfAL27TJeRP7ZJfqRmKrhDudB69o4CvcHMeJsm",
+        cashbackATA: "Bvj2aL2qroYy5ucNitkDUoJ5gkAxVFuvkBWUycbSZQT1"
     },
     {
         index: 1,
-        publicKey: "2qKNMo7nu3C4mYCnEGbxndhtszUq3n88ebfqRPswwbZ2"
+        publicKey: "2qKNMo7nu3C4mYCnEGbxndhtszUq3n88ebfqRPswwbZ2",
+        cashbackATA: "3s6YBUrtHeX3mamKNyBxYxBKw7UY6puzC3RbtnvD91bh"
     },
     {
         index: 2,
-        publicKey: "Ew5ZvEchSaGhc8N5AMMYKAw2ueh8swvEVnwQS3TwUk7K"
+        publicKey: "Ew5ZvEchSaGhc8N5AMMYKAw2ueh8swvEVnwQS3TwUk7K",
+        cashbackATA: "7vxqrLnkDm8xnRp9cpMdk6KGu9hiSQXrwteVrCmCk4ya"
     },
     {
         index: 3,
-        publicKey: "4sUmdEpoCAc3XLFr9icSd915f3Ei99RNhm7iVBBqKqzA"
+        publicKey: "4sUmdEpoCAc3XLFr9icSd915f3Ei99RNhm7iVBBqKqzA",
+        cashbackATA: "94BqUZDFUDi7X15Z32b43Y95dB1sXiDoUtLVGCzdQm8S"
     },
     {
         index: 4,
-        publicKey: "EZpyfQf5QLLJQHazyMRtzCMQ5ixPmvadkPzbWv3uaex5"
+        publicKey: "EZpyfQf5QLLJQHazyMRtzCMQ5ixPmvadkPzbWv3uaex5",
+        cashbackATA: "GMJmN2vsLV8uDpvmKJC2MkkaatVcqJmGnrkfZRKKwai6"
     },
     {
         index: 5,
-        publicKey: "25CbzG2mhFMJYhdXyjyG32tvWAPjZFfwuPcwpCyhY4mk"
+        publicKey: "25CbzG2mhFMJYhdXyjyG32tvWAPjZFfwuPcwpCyhY4mk",
+        cashbackATA: "FVxezjf3638yHRjxCqND7CnB8MUcXckd6JRAUp76oE7L"
     },
     {
         index: 6,
-        publicKey: "HnzQ5akcvt7FLfd9HuvP7AdBBKajcKhQAZi8kqTeetUw"
+        publicKey: "HnzQ5akcvt7FLfd9HuvP7AdBBKajcKhQAZi8kqTeetUw",
+        cashbackATA: "9pxg75VdnJWsBcsfNkwRus86TpZQLhrQKYuHVeDaVgn9"
     },
     {
         index: 7,
-        publicKey: "dXmbCoMokJAdxvx4s2MusDSfPz5E1kfeLbFm1TtRDJJ"
+        publicKey: "dXmbCoMokJAdxvx4s2MusDSfPz5E1kfeLbFm1TtRDJJ",
+        cashbackATA: "3GguBWDXiTuZEzFfFbhULbnKzQzZHFMBpqR36kthVvDh"
     },
     {
         index: 8,
-        publicKey: "AToGrNDmKQhoeG5U83m3CY8rXc3jyLEZ3H5GMVr8QYcf"
+        publicKey: "AToGrNDmKQhoeG5U83m3CY8rXc3jyLEZ3H5GMVr8QYcf",
+        cashbackATA: "4EDMXKm8DSBuaFTEhMF8MEFgPVLHnBqhZjGm7xqeq8kj"
     },
     {
         index: 9,
-        publicKey: "AoF4mzAFMswVQxMoUa9PvMuJYaNMiuhj4rhe6h6dmKAz"
+        publicKey: "AoF4mzAFMswVQxMoUa9PvMuJYaNMiuhj4rhe6h6dmKAz",
+        cashbackATA: "F389cpYM8VCGLCQGLA4N2xY7Td44XqXFpFHxzgGyxA6y"
     },
     {
         index: 10,
-        publicKey: "4zQnKSf3gF2F3Av2MeTxkmMo57sSFvMZmZRDQyx3GFZ6"
+        publicKey: "4zQnKSf3gF2F3Av2MeTxkmMo57sSFvMZmZRDQyx3GFZ6",
+        cashbackATA: "4n1v1zuFVnF7RL8dcgDcQM7RGFyZ7eCXr9XSm7kiN71S"
     },
     {
         index: 11,
-        publicKey: "DXADrcqr8UDChmNXcJLsFC7ojkaqShbaNHP1rao68EUs"
+        publicKey: "DXADrcqr8UDChmNXcJLsFC7ojkaqShbaNHP1rao68EUs",
+        cashbackATA: "4ovwuij9LGUGV6xJfpLxzerxxMiPq1TteRNfqaFDy7XK"
     },
     {
         index: 12,
-        publicKey: "BKZ6JFtBMYhNiWYHwS96KkYgAHWtCKLK2fVZaxgPUSju"
+        publicKey: "BKZ6JFtBMYhNiWYHwS96KkYgAHWtCKLK2fVZaxgPUSju",
+        cashbackATA: "HGihWCqPkQwHfwUkJGoZtYS9A4U8AbKNQf6M2s5DnZd6"
     },
     {
         index: 13,
-        publicKey: "2NDYEAwuee5EUjK7CvB8wSPvQsZprXxzPm2g6PGAj3CT"
+        publicKey: "2NDYEAwuee5EUjK7CvB8wSPvQsZprXxzPm2g6PGAj3CT",
+        cashbackATA: "F3JaBUe9JpHewZU47jaCKjzUF23i4rTkDf6HGvUBP8fj"
     },
     {
         index: 14,
-        publicKey: "BLSVRrdERqS1LPP4tyJ2HYghByghWRSnoiojm22C2czz"
+        publicKey: "BLSVRrdERqS1LPP4tyJ2HYghByghWRSnoiojm22C2czz",
+        cashbackATA: "5b8rSj4MxS9tPhXxgMMnijeTMVv9WUutj5dKSKfB2SRS"
     },
     {
         index: 15,
-        publicKey: "69J2HyLoXLbCzLANV4cFqydGLbkqypt51XrJPqvVwWVS"
+        publicKey: "69J2HyLoXLbCzLANV4cFqydGLbkqypt51XrJPqvVwWVS",
+        cashbackATA: "Ek24FXsFKVMfdArBR8UMQkHEdayXF6eDRwHzqF9nKkEJ"
     },
     {
         index: 16,
-        publicKey: "5ovAXA8fTWLvKesenhwwv58owis9UdcBamo9xqVgBSnz"
+        publicKey: "5ovAXA8fTWLvKesenhwwv58owis9UdcBamo9xqVgBSnz",
+        cashbackATA: "7Bhyomf64xrqu1N7YRqKSmKzUeRKs2DavJKUCuuwACUU"
     },
     {
         index: 17,
-        publicKey: "3rBLhz6ZieNP2Wq3v6cHyJ6nx3q6aey28b3Gr7DMkvKW"
+        publicKey: "3rBLhz6ZieNP2Wq3c6HyJ6nx3q6aey28b3Gr7DMkvKW",
+        cashbackATA: "9jLx67HN4JPS9gJQA2VpmS9rxAeJAnYAbyM3BDGniwN9"
     },
     {
         index: 18,
-        publicKey: "42pAHoNqWq5qKYLTy8XmJdcvBMDweDd1ejdLXwZVWwob"
+        publicKey: "42pAHoNqWq5qKYLTy8XmJdcvBMDweDd1ejdLXwZVWwob",
+        cashbackATA: "5B4FmRRUHAwRizCHhca5j1PSnu9xVJiVqF3q4ssxqDtC"
     },
     {
         index: 19,
-        publicKey: "FNM1d5H7XskgpDQNz9Dnmw5uRvkPAJ9iM2c7LFy3cZNJ"
+        publicKey: "FNM1d5H7XskgpDQNz9Dnmw5uRvkPAJ9iM2c7LFy3cZNJ",
+        cashbackATA: "919ysLcULTPsZtighr1BT7cyfVTn1SeY2naGVEj7w2MW"
     }
 ];
 
@@ -535,7 +555,7 @@ async function fetchBalances() {
             wallets.map(w => w.publicKey);
 
 
-        // One request for all native SOL accounts.
+        // Native SOL balances
         const solResult =
             await rpc("getMultipleAccounts", [
                 addresses,
@@ -545,11 +565,17 @@ async function fetchBalances() {
             ]);
 
 
-        // Fetch WSOL balances.
+        // Normal WSOL balances.
+        // Main wallet intentionally does NOT use WSOL.
         const wsolResults =
             await Promise.all(
-                wallets.map(wallet =>
-                    rpc("getTokenAccountsByOwner", [
+                wallets.map(wallet => {
+
+                    if (wallet.index === "MAIN") {
+                        return Promise.resolve(null);
+                    }
+
+                    return rpc("getTokenAccountsByOwner", [
                         wallet.publicKey,
                         {
                             mint: WSOL_MINT
@@ -557,12 +583,28 @@ async function fetchBalances() {
                         {
                             encoding: "jsonParsed"
                         }
-                    ])
-                )
+                    ]);
+                })
             );
 
 
-        // Get current SOL/USD price.
+        // PumpSwap cashback balances
+        const cashbackResults =
+            await Promise.all(
+                wallets.map(wallet => {
+
+                    if (!wallet.cashbackATA) {
+                        return Promise.resolve(null);
+                    }
+
+                    return rpc("getTokenAccountBalance", [
+                        wallet.cashbackATA
+                    ]).catch(() => null);
+
+                })
+            );
+
+
         const price =
             await getSOLPrice();
 
@@ -572,7 +614,6 @@ async function fetchBalances() {
 
         let grandTotalSOL = 0;
 
-        let mainSOL = 0;
 
         walletsContainer.innerHTML = "";
 
@@ -589,6 +630,7 @@ async function fetchBalances() {
                     : 0;
 
 
+            // Normal WSOL
             let wsol = 0;
 
 
@@ -611,16 +653,30 @@ async function fetchBalances() {
             }
 
 
+            // PumpSwap cashback
+            let cashback = 0;
+
+
+            const cashbackResult =
+                cashbackResults[i];
+
+
+            if (cashbackResult && cashbackResult.value) {
+
+                cashback =
+                    Number(cashbackResult.value.amount)
+                    / 1_000_000_000;
+
+            }
+
+
+            // Main wallet only has SOL.
+            // Other wallets have SOL + WSOL + cashback.
             const total =
-                sol + wsol;
+                sol + wsol + cashback;
 
 
             grandTotalSOL += total;
-
-
-            if (wallet.index === "MAIN") {
-                mainSOL = sol;
-            }
 
 
             const isMain =
@@ -651,68 +707,139 @@ async function fetchBalances() {
                 `wallet ${statusClass}`;
 
 
-            div.innerHTML = `
+            if (isMain) {
 
-                <div class="wallet-top">
+                // MAIN WALLET
+                div.innerHTML = `
 
-                    <div class="wallet-name">
-                        ${isMain ? "MAIN WALLET" : `WALLET ${wallet.index}`}
-                    </div>
+                    <div class="wallet-top">
 
-                    <div class="badge">
-                        ${badge}
-                    </div>
-
-                </div>
-
-
-                <div class="pubkey">
-                    ${wallet.publicKey}
-                </div>
-
-
-                <div class="balances">
-
-                    <div class="balance-box">
-                        <div class="balance-label">
-                            SOL
+                        <div class="wallet-name">
+                            MAIN WALLET
                         </div>
 
-                        <div class="balance-value">
-                            ${formatSOL(sol)}
+                        <div class="badge">
+                            PRIMARY
                         </div>
+
                     </div>
 
 
-                    <div class="balance-box">
-                        <div class="balance-label">
-                            WSOL
-                        </div>
-
-                        <div class="balance-value">
-                            ${formatSOL(wsol)}
-                        </div>
+                    <div class="pubkey">
+                        ${wallet.publicKey}
                     </div>
 
 
-                    <div class="balance-box">
-                        <div class="balance-label">
-                            TOTAL
+                    <div class="balances">
+
+                        <div class="balance-box">
+                            <div class="balance-label">
+                                SOL
+                            </div>
+
+                            <div class="balance-value">
+                                ${formatSOL(sol)}
+                            </div>
                         </div>
 
-                        <div class="balance-value">
-                            ${formatSOL(total)}
+
+                        <div class="balance-box">
+                            <div class="balance-label">
+                                TOTAL
+                            </div>
+
+                            <div class="balance-value">
+                                ${formatSOL(sol)}
+                            </div>
                         </div>
+
                     </div>
 
-                </div>
+
+                    <div class="wallet-usd">
+                        ${formatUSD(sol * price)}
+                    </div>
+
+                `;
+
+            } else {
+
+                // NORMAL WALLET
+                div.innerHTML = `
+
+                    <div class="wallet-top">
+
+                        <div class="wallet-name">
+                            WALLET ${wallet.index}
+                        </div>
+
+                        <div class="badge">
+                            ${badge}
+                        </div>
+
+                    </div>
 
 
-                <div class="wallet-usd">
-                    ${formatUSD(total * price)}
-                </div>
+                    <div class="pubkey">
+                        ${wallet.publicKey}
+                    </div>
 
-            `;
+
+                    <div class="balances">
+
+                        <div class="balance-box">
+                            <div class="balance-label">
+                                SOL
+                            </div>
+
+                            <div class="balance-value">
+                                ${formatSOL(sol)}
+                            </div>
+                        </div>
+
+
+                        <div class="balance-box">
+                            <div class="balance-label">
+                                WSOL
+                            </div>
+
+                            <div class="balance-value">
+                                ${formatSOL(wsol)}
+                            </div>
+                        </div>
+
+
+                        <div class="balance-box">
+                            <div class="balance-label">
+                                CASHBACK
+                            </div>
+
+                            <div class="balance-value">
+                                ${formatSOL(cashback)}
+                            </div>
+                        </div>
+
+
+                        <div class="balance-box">
+                            <div class="balance-label">
+                                TOTAL
+                            </div>
+
+                            <div class="balance-value">
+                                ${formatSOL(total)}
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="wallet-usd">
+                        ${formatUSD(total * price)}
+                    </div>
+
+                `;
+
+            }
 
 
             walletsContainer.appendChild(div);
