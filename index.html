@@ -365,10 +365,16 @@
         }
 
         function decodeTokenAmount(account) {
-            if (!account) return 0;
-            const data = Buffer.from(account.data[0], "base64");
-            if (data.length < 72) return 0;
-            return Number(data.readBigUInt64LE(64)) / 1e9;
+            if (!account || !account.data || !account.data[0]) return 0;
+            const binary = atob(account.data[0]);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            if (bytes.length < 72) return 0;
+            const view = new DataView(bytes.buffer);
+            const raw = view.getBigUint64(64, true);
+            return Number(raw) / 1e9;
         }
 
         function formatSOL(value) { return value.toFixed(6) }
