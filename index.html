@@ -1,556 +1,1178 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="manifest" href="manifest.webmanifest">
     <meta name="theme-color" content="#080b12">
-    <title>Solana Command Center</title>
-    <style>
-        * {
-            box-sizing: border-box
-        }
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: Inter, Arial, sans-serif;
-            background: radial-gradient(circle at 20% 0%, #17213a 0, transparent 35%), radial-gradient(circle at 90% 20%, #24143b 0, transparent 30%), #080b12;
-            color: #f5f7ff
-        }
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.8/themes/odometer-theme-default.min.css">
 
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            background-image: linear-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .025) 1px, transparent 1px);
-            background-size: 32px 32px;
-            mask-image: linear-gradient(to bottom, black, transparent)
-        }
+<title>Solana Command Center</title>
 
+<style>
+    * {
+        box-sizing: border-box
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Inter, Arial, sans-serif;
+        background: radial-gradient(circle at 20% 0%, #17213a 0, transparent 35%),
+            radial-gradient(circle at 90% 20%, #24143b 0, transparent 30%),
+            #080b12;
+        color: #f5f7ff
+    }
+
+    body:before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+            linear-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, .025) 1px, transparent 1px);
+        background-size: 32px 32px;
+        mask-image: linear-gradient(to bottom, #000, transparent)
+    }
+
+    .container {
+        width: min(1100px, calc(100% - 28px));
+        margin: auto;
+        padding: 35px 0 60px
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 28px
+    }
+
+    .title {
+        font-size: clamp(28px, 6vw, 48px);
+        font-weight: 800;
+        letter-spacing: -2px;
+        margin: 0
+    }
+
+    .subtitle {
+        color: #7e8aa8;
+        margin-top: 7px;
+        font-size: 14px
+    }
+
+    button {
+        border: 1px solid rgba(255, 255, 255, .12);
+        border-radius: 12px;
+        padding: 13px 19px;
+        color: #fff;
+        background: rgba(255, 255, 255, .07);
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 700;
+        backdrop-filter: blur(15px);
+        transition: .2s
+    }
+
+    button:hover {
+        background: rgba(255, 255, 255, .13);
+        transform: translateY(-1px)
+    }
+
+    button:disabled {
+        opacity: .5;
+        cursor: wait
+    }
+
+    .hero {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, .1);
+        border-radius: 24px;
+        padding: 30px;
+        margin-bottom: 25px;
+        background: linear-gradient(135deg, rgba(30, 40, 70, .75), rgba(15, 18, 30, .72));
+        box-shadow: 0 25px 80px rgba(0, 0, 0, .35);
+        backdrop-filter: blur(20px)
+    }
+
+    .hero:after {
+        content: "";
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        right: -100px;
+        top: -120px;
+        background: #6d4aff;
+        filter: blur(100px);
+        opacity: .22
+    }
+
+    .hero-label {
+        color: #8995b3;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 2px
+    }
+
+    .grand-total {
+        font-size: clamp(38px, 9vw, 68px);
+        font-weight: 800;
+        letter-spacing: -3px;
+        margin: 8px 0
+    }
+
+    .usd-total {
+        font-size: 20px;
+        color: #9da9c4
+    }
+
+    #grandTotal,
+    #usdTotalOdometer {
+        display: inline-block
+    }
+
+    .grand-total .odometer,
+    .usd-total .odometer {
+        font-size: inherit
+    }
+
+    .odometer.odometer-animating-up .odometer-ribbon-inner,
+    .odometer.odometer-animating-down .odometer-ribbon-inner {
+        transition-duration: 10s !important
+    }
+
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-top: 25px
+    }
+
+    .stat {
+        background: rgba(255, 255, 255, .045);
+        border: 1px solid rgba(255, 255, 255, .07);
+        border-radius: 14px;
+        padding: 14px
+    }
+
+    .stat-label {
+        color: #7d89a5;
+        font-size: 12px
+    }
+
+    .stat-value {
+        margin-top: 5px;
+        font-size: 18px;
+        font-weight: 700
+    }
+
+    .wallet-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 14px
+    }
+
+    .wallet {
+        position: relative;
+        overflow: hidden;
+        border-radius: 18px;
+        padding: 19px;
+        background: rgba(17, 21, 32, .82);
+        border: 1px solid rgba(255, 255, 255, .075);
+        box-shadow: 0 10px 35px rgba(0, 0, 0, .2);
+        transition: .2s
+    }
+
+    .wallet:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, .16)
+    }
+
+    .wallet.main {
+        grid-column: 1/-1;
+        background: linear-gradient(135deg, rgba(48, 37, 86, .8), rgba(17, 21, 32, .9));
+        border-color: rgba(143, 111, 255, .35)
+    }
+
+    .wallet.safe {
+        border-left: 3px solid #25e69a
+    }
+
+    .wallet.low {
+        border-left: 3px solid #ff426d
+    }
+
+    .wallet-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px
+    }
+
+    .wallet-name {
+        font-size: 17px;
+        font-weight: 800
+    }
+
+    .badge {
+        font-size: 10px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, .07);
+        color: #aab4ca;
+        text-transform: uppercase;
+        letter-spacing: 1px
+    }
+
+    .safe .badge {
+        color: #25e69a;
+        background: rgba(37, 230, 154, .08)
+    }
+
+    .low .badge {
+        color: #ff426d;
+        background: rgba(255, 66, 109, .08)
+    }
+
+    .pubkey {
+        margin: 10px 0 18px;
+        color: #626d87;
+        font-size: 10px;
+        word-break: break-all
+    }
+
+    .balances {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto;
+        gap: 8px
+    }
+
+    .balance-box {
+        padding: 11px;
+        border-radius: 11px;
+        background: rgba(255, 255, 255, .035)
+    }
+
+    .balance-label {
+        color: #707b95;
+        font-size: 10px;
+        text-transform: uppercase
+    }
+
+    .balance-value {
+        margin-top: 5px;
+        font-size: 13px;
+        font-weight: 700
+    }
+
+    .balance-usd {
+        grid-column: 1;
+        grid-row: 3;
+        align-self: center;
+        padding: 11px 0;
+        color: #8d99b5;
+        font-size: 13px;
+        font-weight: 700
+    }
+
+    .balance-total {
+        grid-column: 2;
+        grid-row: 3
+    }
+
+    .closes-sub {
+        margin-top: 3px;
+        color: #626d87;
+        font-size: 10px
+    }
+
+    .wallet-usd {
+        margin-top: 13px;
+        color: #8d99b5;
+        font-size: 13px
+    }
+
+    .status {
+        margin-top: 20px;
+        color: #69748e;
+        font-size: 11px
+    }
+
+    @media(max-width:600px) {
         .container {
-            width: min(1100px, calc(100% - 28px));
-            margin: auto;
-            padding: 35px 0 60px
+            padding-top: 20px
         }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 28px
+            align-items: flex-start
         }
 
-        .title {
-            font-size: clamp(28px, 6vw, 48px);
-            font-weight: 800;
-            letter-spacing: -2px;
-            margin: 0
-        }
-
-        .subtitle {
-            color: #7e8aa8;
-            margin-top: 7px;
-            font-size: 14px
-        }
-
-        button {
-            border: 1px solid rgba(255, 255, 255, .12);
-            border-radius: 12px;
-            padding: 13px 19px;
-            color: white;
-            background: rgba(255, 255, 255, .07);
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 700;
-            backdrop-filter: blur(15px);
-            transition: .2s
-        }
-
-        button:hover {
-            background: rgba(255, 255, 255, .13);
-            transform: translateY(-1px)
-        }
-
-        button:disabled {
-            opacity: .5;
-            cursor: wait
-        }
-
-        .hero {
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, .1);
-            border-radius: 24px;
-            padding: 30px;
-            margin-bottom: 25px;
-            background: linear-gradient(135deg, rgba(30, 40, 70, .75), rgba(15, 18, 30, .72));
-            box-shadow: 0 25px 80px rgba(0, 0, 0, .35);
-            backdrop-filter: blur(20px)
-        }
-
-        .hero::after {
-            content: "";
-            position: absolute;
-            width: 250px;
-            height: 250px;
-            right: -100px;
-            top: -120px;
-            background: #6d4aff;
-            filter: blur(100px);
-            opacity: .22
-        }
-
-        .hero-label {
-            color: #8995b3;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 2px
-        }
-
-        .grand-total {
-            font-size: clamp(38px, 9vw, 68px);
-            font-weight: 800;
-            letter-spacing: -3px;
-            margin: 8px 0
-        }
-
-        .usd-total {
-            font-size: 20px;
-            color: #9da9c4
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 25px
-        }
-
-        .stat {
-            background: rgba(255, 255, 255, .045);
-            border: 1px solid rgba(255, 255, 255, .07);
-            border-radius: 14px;
-            padding: 14px
-        }
-
-        .stat-label {
-            color: #7d89a5;
+        .header button {
+            padding: 11px;
             font-size: 12px
         }
 
-        .stat-value {
-            margin-top: 5px;
-            font-size: 18px;
-            font-weight: 700
-        }
-
-        .wallet-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 14px
-        }
-
-        .wallet {
-            position: relative;
-            overflow: hidden;
-            border-radius: 18px;
-            padding: 19px;
-            background: rgba(17, 21, 32, .82);
-            border: 1px solid rgba(255, 255, 255, .075);
-            box-shadow: 0 10px 35px rgba(0, 0, 0, .2);
-            transition: .2s
-        }
-
-        .wallet:hover {
-            transform: translateY(-2px);
-            border-color: rgba(255, 255, 255, .16)
+        .hero {
+            padding: 22px
         }
 
         .wallet.main {
-            grid-column: 1/-1;
-            background: linear-gradient(135deg, rgba(48, 37, 86, .8), rgba(17, 21, 32, .9));
-            border-color: rgba(143, 111, 255, .35)
+            grid-column: auto
         }
+    }
+</style>
 
-        .wallet.safe {
-            border-left: 3px solid #25e69a
-        }
-
-        .wallet.low {
-            border-left: 3px solid #ff426d
-        }
-
-        .wallet-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px
-        }
-
-        .wallet-name {
-            font-size: 17px;
-            font-weight: 800
-        }
-
-        .badge {
-            font-size: 10px;
-            padding: 5px 8px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, .07);
-            color: #aab4ca;
-            text-transform: uppercase;
-            letter-spacing: 1px
-        }
-
-        .safe .badge {
-            color: #25e69a;
-            background: rgba(37, 230, 154, .08)
-        }
-
-        .low .badge {
-            color: #ff426d;
-            background: rgba(255, 66, 109, .08)
-        }
-
-        .pubkey {
-            margin: 10px 0 18px;
-            color: #626d87;
-            font-size: 10px;
-            word-break: break-all
-        }
-
-        .balances {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px
-        }
-
-        .balance-box {
-            padding: 11px;
-            border-radius: 11px;
-            background: rgba(255, 255, 255, .035)
-        }
-
-        .balance-label {
-            color: #707b95;
-            font-size: 10px;
-            text-transform: uppercase
-        }
-
-        .balance-value {
-            margin-top: 5px;
-            font-size: 13px;
-            font-weight: 700
-        }
-
-        .wallet-usd {
-            margin-top: 13px;
-            color: #8d99b5;
-            font-size: 13px
-        }
-
-        .status {
-            margin-top: 20px;
-            color: #69748e;
-            font-size: 11px
-        }
-
-        @media(max-width:600px) {
-            .container {
-                padding-top: 20px
-            }
-
-            .header {
-                align-items: flex-start
-            }
-
-            .header button {
-                padding: 11px;
-                font-size: 12px
-            }
-
-            .hero {
-                padding: 22px
-            }
-
-            .wallet.main {
-                grid-column: auto
-            }
-
-            .balances {
-                grid-template-columns: 1fr 1fr
-            }
-        }
-    </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="header">
-            <div>
-                <h1 class="title">SOL // COMMAND</h1>
-                <div class="subtitle">Multi-wallet portfolio monitor</div>
-            </div>
-            <button id="fetchBtn">↻ REFRESH</button>
+
+<div class="container">
+
+    <div class="header">
+        <div>
+            <h1 class="title">SOL // COMMAND</h1>
+            <div class="subtitle">Multi-wallet portfolio monitor</div>
         </div>
 
-        <section class="hero">
-            <div class="hero-label">Portfolio Value</div>
-            <div class="grand-total" id="grandTotal">---</div>
-            <div class="usd-total" id="usdTotal">$---</div>
-            <div class="stats">
-                <div class="stat">
-                    <div class="stat-label">SOL PRICE</div>
-                    <div class="stat-value" id="solPrice">$---</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label">WALLETS</div>
-                    <div class="stat-value">21</div>
-                </div>
-            </div>
-            <div class="status" id="status">Awaiting refresh...</div>
-        </section>
-
-        <div class="wallet-grid" id="wallets"></div>
+        <button id="fetchBtn">↻ REFRESH</button>
     </div>
 
-    <script>
-        const RPC = "https://mainnet.helius-rpc.com/?api-key=effd806d-2126-4b17-b69d-a68f37ace363";
-        const WSOL_MINT = "So11111111111111111111111111111111111111112";
+    <section class="hero">
 
-        const wallets = [
-            { index: "MAIN", publicKey: "nigger24aL9gzjedPYg8kCACtYiWrjDiiBiUptCiXZ6" },
-            { index: 0, publicKey: "5uA5SaRfAL27TJeRP7ZJfqRmKrhDudB69o4CvcHMeJsm", cashbackATA: "Bvj2aL2qroYy5ucNitkDUoJ5gkAxVFuvkBWUycbSZQT1" },
-            { index: 1, publicKey: "2qKNMo7nu3C4mYCnEGbxndhtszUq3n88ebfqRPswwbZ2", cashbackATA: "3s6YBUrtHeX3mamKNyBxYxBKw7UY6puzC3RbtnvD91bh" },
-            { index: 2, publicKey: "Ew5ZvEchSaGhc8N5AMMYKAw2ueh8swvEVnwQS3TwUk7K", cashbackATA: "7vxqrLnkDm8xnRp9cpMdk6KGu9hiSQXrwteVrCmCk4ya" },
-            { index: 3, publicKey: "4sUmdEpoCAc3XLFr9icSd915f3Ei99RNhm7iVBBqKqzA", cashbackATA: "94BqUZDFUDi7X15Z32b43Y95dB1sXiDoUtLVGCzdQm8S" },
-            { index: 4, publicKey: "EZpyfQf5QLLJQHazyMRtzCMQ5ixPmvadkPzbWv3uaex5", cashbackATA: "GMJmN2vsLV8uDpvmKJC2MkkaatVcqJmGnrkfZRKKwai6" },
-            { index: 5, publicKey: "25CbzG2mhFMJYhdXyjyG32tvWAPjZFfwuPcwpCyhY4mk", cashbackATA: "FVxezjf3638yHRjxCqND7CnB8MUcXckd6JRAUp76oE7L" },
-            { index: 6, publicKey: "HnzQ5akcvt7FLfd9HuvP7AdBBKajcKhQAZi8kqTeetUw", cashbackATA: "9pxg75VdnJWsBcsfNkwRus86TpZQLhrQKYuHVeDaVgn9" },
-            { index: 7, publicKey: "dXmbCoMokJAdxvx4s2MusDSfPz5E1kfeLbFm1TtRDJJ", cashbackATA: "3GguBWDXiTuZEzFfFbhULbnKzQzZHFMBpqR36kthVvDh" },
-            { index: 8, publicKey: "AToGrNDmKQhoeG5U83m3CY8rXc3jyLEZ3H5GMVr8QYcf", cashbackATA: "4EDMXKm8DSBuaFTEhMF8MEFgPVLHnBqhZjGm7xqeq8kj" },
-            { index: 9, publicKey: "AoF4mzAFMswVQxMoUa9PvMuJYaNMiuhj4rhe6h6dmKAz", cashbackATA: "F389cpYM8VCGLCQGLA4N2xY7Td44XqXFpFHxzgGyxA6y" },
-            { index: 10, publicKey: "4zQnKSf3gF2F3Av2MeTxkmMo57sSFvMZmZRDQyx3GFZ6", cashbackATA: "4n1v1zuFVnF7RL8dcgDcQM7RGFyZ7eCXr9XSm7kiN71S" },
-            { index: 11, publicKey: "DXADrcqr8UDChmNXcJLsFC7ojkaqShbaNHP1rao68EUs", cashbackATA: "4ovwuij9LGUGV6xJfpLxzerxxMiPq1TteRNfqaFDy7XK" },
-            { index: 12, publicKey: "BKZ6JFtBMYhNiWYHwS96KkYgAHWtCKLK2fVZaxgPUSju", cashbackATA: "HGihWCqPkQwHfwUkJGoZtYS9A4U8AbKNQf6M2s5DnZd6" },
-            { index: 13, publicKey: "2NDYEAwuee5EUjK7CvB8wSPvQsZprXxzPm2g6PGAj3CT", cashbackATA: "F3JaBUe9JpHewZU47jaCKjzUF23i4rTkDf6HGvUBP8fj" },
-            { index: 14, publicKey: "BLSVRrdERqS1LPP4tyJ2HYghByghWRSnoiojm22C2czz", cashbackATA: "5b8rSj4MxS9tPhXxgMMnijeTMVv9WUutj5dKSKfB2SRS" },
-            { index: 15, publicKey: "69J2HyLoXLbCzLANV4cFqydGLbkqypt51XrJPqvVwWVS", cashbackATA: "Ek24FXsFKVMfdArBR8UMQkHEdayXF6eDRwHzqF9nKkEJ" },
-            { index: 16, publicKey: "5ovAXA8fTWLvKesenhwwv58owis9UdcBamo9xqVgBSnz", cashbackATA: "7Bhyomf64xrqu1N7YRqKSmKzUeRKs2DavJKUCuuwACUU" },
-            { index: 17, publicKey: "3rBLhz6ZieNP2Wq3v6cHyJ6nx3q6aey28b3Gr7DMkvKW", cashbackATA: "9jLx67HN4JPS9gJQA2VpmS9rxAeJAnYAbyM3BDGniwN9" },
-            { index: 18, publicKey: "42pAHoNqWq5qKYLTy8XmJdcvBMDweDd1ejdLXwZVWwob", cashbackATA: "5B4FmRRUHAwRizCHhca5j1PSnu9xVJiVqF3q4ssxqDtC" },
-            { index: 19, publicKey: "FNM1d5H7XskgpDQNz9Dnmw5uRvkPAJ9iM2c7LFy3cZNJ", cashbackATA: "919ysLcULTPsZtighr1BT7cyfVTn1SeY2naGVEj7w2MW" }
-        ];
+        <div class="hero-label">Portfolio Value</div>
 
-        const walletsContainer = document.getElementById("wallets");
-        const fetchBtn = document.getElementById("fetchBtn");
-        const grandTotal = document.getElementById("grandTotal");
-        const usdTotal = document.getElementById("usdTotal");
-        const solPrice = document.getElementById("solPrice");
-        const status = document.getElementById("status");
+        <div class="grand-total">
+            <span id="grandTotal" class="odometer">0.000000</span> SOL
+        </div>
 
-        async function rpc(method, params) {
-            const response = await fetch(RPC, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params })
-            });
-            const data = await response.json();
-            if (data.error) throw new Error(data.error.message);
-            return data.result;
+        <div class="usd-total">
+            $<span id="usdTotalOdometer" class="odometer">0.00</span>
+        </div>
+
+        <div class="stats">
+
+            <div class="stat">
+                <div class="stat-label">SOL PRICE</div>
+                <div class="stat-value" id="solPrice">$---</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">WALLETS</div>
+                <div class="stat-value">21</div>
+            </div>
+
+        </div>
+
+        <div class="status" id="status">
+            Awaiting refresh...
+        </div>
+
+    </section>
+
+    <div class="wallet-grid" id="wallets"></div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.8/odometer.min.js"></script>
+
+<script src="https://unpkg.com/@solana/web3.js@1.98.4/lib/index.iife.min.js"></script>
+
+<script>
+
+    const RPC_KEYS = [
+        "fc22cf83-7f9b-4656-8f83-22b9e377e363",
+        "effd806d-2126-4b17-b69d-a68f37ace363"
+    ];
+
+    const RPC_BASE =
+        "https://mainnet.helius-rpc.com/?api-key=";
+
+    const WSOL_MINT =
+        "So11111111111111111111111111111111111111112";
+
+    const SKIP = new Set([
+        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        WSOL_MINT,
+        "8pTYfuGmL8q7MsH2585K9o9tjVyW3ACz1F2RUaZQpump"
+    ]);
+
+    const TOKEN_PROGRAM_ID =
+        "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+
+    const TOKEN_2022_PROGRAM_ID =
+        "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
+
+    const wallets = [
+        {
+            index: "MAIN",
+            publicKey: "nigger24aL9gzjedPYg8kCACtYiWrjDiiBiUptCiXZ6"
+        },
+        {
+            index: 0,
+            publicKey: "5uA5SaRfAL27TJeRP7ZJfqRmKrhDudB69o4CvcHMeJsm",
+            cashbackATA: "Bvj2aL2qroYy5ucNitkDUoJ5gkAxVFuvkBWUycbSZQT1"
+        },
+        {
+            index: 1,
+            publicKey: "2qKNMo7nu3C4mYCnEGbxndhtszUq3n88ebfqRPswwbZ2",
+            cashbackATA: "3s6YBUrtHeX3mamKNyBxYxBKw7UY6puzC3RbtnvD91bh"
+        },
+        {
+            index: 2,
+            publicKey: "Ew5ZvEchSaGhc8N5AMMYKAw2ueh8swvEVnwQS3TwUk7K",
+            cashbackATA: "7vxqrLnkDm8xnRp9cpMdk6KGu9hiSQXrwteVrCmCk4ya"
+        },
+        {
+            index: 3,
+            publicKey: "4sUmdEpoCAc3XLFr9icSd915f3Ei99RNhm7iVBBqKqzA",
+            cashbackATA: "94BqUZDFUDi7X15Z32b43Y95dB1sXiDoUtLVGCzdQm8S"
+        },
+        {
+            index: 4,
+            publicKey: "EZpyfQf5QLLJQHazyMRtzCMQ5ixPmvadkPzbWv3uaex5",
+            cashbackATA: "GMJmN2vsLV8uDpvmKJC2MkkaatVcqJmGnrkfZRKKwai6"
+        },
+        {
+            index: 5,
+            publicKey: "25CbzG2mhFMJYhdXyjyG32tvWAPjZFfwuPcwpCyhY4mk",
+            cashbackATA: "FVxezjf3638yHRjxCqND7CnB8MUcXckd6JRAUp76oE7L"
+        },
+        {
+            index: 6,
+            publicKey: "HnzQ5akcvt7FLfd9HuvP7AdBBKajcKhQAZi8kqTeetUw",
+            cashbackATA: "9pxg75VdnJWsBcsfNkwRus86TpZQLhrQKYuHVeDaVgn9"
+        },
+        {
+            index: 7,
+            publicKey: "dXmbCoMokJAdxvx4s2MusDSfPz5E1kfeLbFm1TtRDJJ",
+            cashbackATA: "3GguBWDXiTuZEzFfFbhULbnKzQzZHFMBpqR36kthVvDh"
+        },
+        {
+            index: 8,
+            publicKey: "AToGrNDmKQhoeG5U83m3CY8rXc3jyLEZ3H5GMVr8QYcf",
+            cashbackATA: "4EDMXKm8DSBuaFTEhMF8MEFgPVLHnBqhZjGm7xqeq8kj"
+        },
+        {
+            index: 9,
+            publicKey: "AoF4mzAFMswVQxMoUa9PvMuJYaNMiuhj4rhe6h6dmKAz",
+            cashbackATA: "F389cpYM8VCGLCQGLA4N2xY7Td44XqXFpFHxzgGyxA6y"
+        },
+        {
+            index: 10,
+            publicKey: "4zQnKSf3gF2F3Av2MeTxkmMo57sSFvMZmZRDQyx3GFZ6",
+            cashbackATA: "4n1v1zuFVnF7RL8dcgDcQM7RGFyZ7eCXr9XSm7kiN71S"
+        },
+        {
+            index: 11,
+            publicKey: "DXADrcqr8UDChmNXcJLsFC7ojkaqShbaNHP1rao68EUs",
+            cashbackATA: "4ovwuij9LGUGV6xJfpLxzerxxMiPq1TteRNfqaFDy7XK"
+        },
+        {
+            index: 12,
+            publicKey: "BKZ6JFtBMYhNiWYHwS96KkYgAHWtCKLK2fVZaxgPUSju",
+            cashbackATA: "HGihWCqPkQwHfwUkJGoZtYS9A4U8AbKNQf6M2s5DnZd6"
+        },
+        {
+            index: 13,
+            publicKey: "2NDYEAwuee5EUjK7CvB8wSPvQsZprXxzPm2g6PGAj3CT",
+            cashbackATA: "F3JaBUe9JpHewZU47jaCKjzUF23i4rTkDf6HGvUBP8fj"
+        },
+        {
+            index: 14,
+            publicKey: "BLSVRrdERqS1LPP4tyJ2HYghByghWRSnoiojm22C2czz",
+            cashbackATA: "5b8rSj4MxS9tPhXxgMMnijeTMVv9WUutj5dKSKfB2SRS"
+        },
+        {
+            index: 15,
+            publicKey: "69J2HyLoXLbCzLANV4cFqydGLbkqypt51XrJPqvVwWVS",
+            cashbackATA: "Ek24FXsFKVMfdArBR8UMQkHEdayXF6eDRwHzqF9nKkEJ"
+        },
+        {
+            index: 16,
+            publicKey: "5ovAXA8fTWLvKesenhwwv58owis9UdcBamo9xqVgBSnz",
+            cashbackATA: "7Bhyomf64xrqu1N7YRqKSmKzUeRKs2DavJKUCuuwACUU"
+        },
+        {
+            index: 17,
+            publicKey: "3rBLhz6ZieNP2Wq3v6cHyJ6nx3q6aey28b3Gr7DMkvKW",
+            cashbackATA: "9jLx67HN4JPS9gJQA2VpmS9rxAeJAnYAbyM3BDGniwN9"
+        },
+        {
+            index: 18,
+            publicKey: "42pAHoNqWq5qKYLTy8XmJdcvBMDweDd1ejdLXwZVWwob",
+            cashbackATA: "5B4FmRRUHAwRizCHhca5j1PSnu9xVJiVqF3q4ssxqDtC"
+        },
+        {
+            index: 19,
+            publicKey: "FNM1d5H7XskgpDQNz9Dnmw5uRvkPAJ9iM2c7LFy3cZNJ",
+            cashbackATA: "919ysLcULTPsZtighr1BT7cyfVTn1SeY2naGVEj7w2MW"
         }
+    ];
 
-        function decodeTokenAmount(account) {
-            if (!account || !account.data || !account.data[0]) return 0;
-            const binary = atob(account.data[0]);
-            const bytes = new Uint8Array(binary.length);
-            for (let i = 0; i < binary.length; i++) {
-                bytes[i] = binary.charCodeAt(i);
-            }
-            if (bytes.length < 72) return 0;
-            const view = new DataView(bytes.buffer);
-            const raw = view.getBigUint64(64, true);
-            return Number(raw) / 1e9;
-        }
+    let rpcIndex = 0;
 
-        function formatSOL(value) { return value.toFixed(6) }
+    const walletsContainer =
+        document.getElementById("wallets");
 
-        function formatUSD(value) {
-            return value.toLocaleString("en-US", {
-                style: "currency",
-                currency: "USD",
-                maximumFractionDigits: 2
-            });
-        }
+    const fetchBtn =
+        document.getElementById("fetchBtn");
 
-        async function getSOLPrice() {
-            const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd");
-            if (!response.ok) throw new Error("Could not fetch SOL price");
-            const data = await response.json();
-            return data.solana.usd;
-        }
+    const grandTotalElement =
+        document.getElementById("grandTotal");
 
-        async function fetchBalances() {
-            fetchBtn.disabled = true;
-            fetchBtn.textContent = "LOADING...";
-            status.textContent = "Scanning wallets...";
+    const usdTotalElement =
+        document.getElementById("usdTotalOdometer");
 
-            try {
-                const addresses = wallets.map(w => w.publicKey);
+    const solPrice =
+        document.getElementById("solPrice");
 
-                const solResult = await rpc("getMultipleAccounts", [
-                    addresses,
-                    { encoding: "base64" }
-                ]);
+    const status =
+        document.getElementById("status");
 
-                const wsolResults = await Promise.all(
-                    wallets.map(wallet => {
-                        if (wallet.index === "MAIN") return null;
-                        return rpc("getTokenAccountsByOwner", [
-                            wallet.publicKey,
-                            { mint: WSOL_MINT },
-                            { encoding: "jsonParsed" }
-                        ]);
-                    })
+    const grandTotalOdometer =
+        new Odometer({
+            el: grandTotalElement,
+            value: 0,
+            format: "(,ddd).dddddd",
+            theme: "default"
+        });
+
+    const usdTotalOdometer =
+        new Odometer({
+            el: usdTotalElement,
+            value: 0,
+            format: "(,ddd).dd",
+            theme: "default"
+        });
+
+    const delay =
+        ms => new Promise(r => setTimeout(r, ms));
+
+    async function rpc(method, params, debugName = "") {
+
+        await delay(200);
+
+        const keyIndex =
+            rpcIndex++ % RPC_KEYS.length;
+
+        const key =
+            RPC_KEYS[keyIndex];
+
+        try {
+
+            const response =
+                await fetch(
+                    RPC_BASE + key,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            jsonrpc: "2.0",
+                            id: 1,
+                            method,
+                            params
+                        })
+                    }
                 );
 
-                const cashbackAddresses = wallets
-                    .filter(w => w.cashbackATA)
-                    .map(w => w.cashbackATA);
+            const data =
+                await response.json();
 
-                const cashbackResult = await rpc("getMultipleAccounts", [
-                    cashbackAddresses,
-                    { encoding: "base64" }
-                ]);
+            if (data.error) {
 
-                const cashbackMap = new Map();
+                console.error(
+                    `RPC FAILED: ${debugName || method}`,
+                    {
+                        method,
+                        params,
+                        error: data.error,
+                        rpcKey: keyIndex
+                    }
+                );
 
-                wallets
-                    .filter(w => w.cashbackATA)
-                    .forEach((wallet, i) => {
-                        cashbackMap.set(
-                            wallet.cashbackATA,
-                            decodeTokenAmount(cashbackResult.value[i])
-                        );
-                    });
+                throw new Error(
+                    `${debugName || method}: ${data.error.message}`
+                );
+            }
 
-                const price = await getSOLPrice();
-                solPrice.textContent = formatUSD(price);
+            return data.result;
 
-                let grandTotalSOL = 0;
-                walletsContainer.innerHTML = "";
+        } catch (error) {
 
-                wallets.forEach((wallet, i) => {
-                    const account = solResult.value[i];
+            console.error(
+                `RPC EXCEPTION: ${debugName || method}`,
+                error
+            );
 
-                    const sol = account
-                        ? account.lamports / 1e9
-                        : 0;
+            throw error;
+        }
+    }
+
+    function validateAddress(address, label) {
+
+        try {
+
+            new solanaWeb3.PublicKey(address);
+
+            return true;
+
+        } catch (e) {
+
+            console.error(
+                `INVALID ADDRESS: ${label}`,
+                address,
+                e
+            );
+
+            return false;
+        }
+    }
+
+    function decodeTokenAmount(account) {
+
+        if (!account?.data?.[0])
+            return 0;
+
+        const binary =
+            atob(account.data[0]);
+
+        const bytes =
+            Uint8Array.from(
+                binary,
+                c => c.charCodeAt(0)
+            );
+
+        if (bytes.length < 72)
+            return 0;
+
+        return Number(
+            new DataView(bytes.buffer)
+                .getBigUint64(64, true)
+        ) / 1e9;
+    }
+
+    const formatSOL =
+        v => v.toFixed(6);
+
+    const formatUSD =
+        v =>
+            v.toLocaleString(
+                "en-US",
+                {
+                    style: "currency",
+                    currency: "USD",
+                    maximumFractionDigits: 2
+                }
+            );
+
+    async function getSOLPrice() {
+
+        const r =
+            await fetch(
+                "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd"
+            );
+
+        if (!r.ok)
+            throw new Error(
+                "Could not fetch SOL price"
+            );
+
+        return (
+            await r.json()
+        ).solana.usd;
+    }
+
+    async function getCloseStats(wallet) {
+
+        const results =
+            await Promise.all(
+                [
+                    TOKEN_PROGRAM_ID,
+                    TOKEN_2022_PROGRAM_ID
+                ].map(
+                    program =>
+                        rpc(
+                            "getTokenAccountsByOwner",
+                            [
+                                wallet.publicKey,
+                                {
+                                    programId: program
+                                },
+                                {
+                                    encoding: "jsonParsed"
+                                }
+                            ],
+                            `WALLET ${wallet.index} CLOSES / ${
+                                program === TOKEN_PROGRAM_ID
+                                    ? "SPL"
+                                    : "TOKEN-2022"
+                            }`
+                        )
+                )
+            );
+
+        let accounts = 0;
+        let lamports = 0;
+
+        for (const result of results) {
+
+            for (const account of result.value) {
+
+                const info =
+                    account.account.data.parsed.info;
+
+                if (SKIP.has(info.mint))
+                    continue;
+
+                if (
+                    BigInt(
+                        info.tokenAmount.amount
+                    ) === 0n
+                ) {
+
+                    accounts++;
+
+                    lamports +=
+                        account.account.lamports;
+                }
+            }
+        }
+
+        return {
+            accounts,
+            sol: lamports / 1e9
+        };
+    }
+
+    async function fetchBalances() {
+
+        fetchBtn.disabled = true;
+        fetchBtn.textContent = "LOADING...";
+        status.textContent = "Scanning wallets...";
+
+        try {
+
+            console.log(
+                "========== WALLET VALIDATION =========="
+            );
+
+            for (const wallet of wallets) {
+
+                if (
+                    !validateAddress(
+                        wallet.publicKey,
+                        `WALLET ${wallet.index}`
+                    )
+                ) {
+
+                    throw new Error(
+                        `INVALID PUBLIC KEY: WALLET ${wallet.index} ${wallet.publicKey}`
+                    );
+                }
+
+                if (
+                    wallet.cashbackATA &&
+                    !validateAddress(
+                        wallet.cashbackATA,
+                        `WALLET ${wallet.index} CASHBACK ATA`
+                    )
+                ) {
+
+                    throw new Error(
+                        `INVALID CASHBACK ATA: WALLET ${wallet.index} ${wallet.cashbackATA}`
+                    );
+                }
+            }
+
+            console.log(
+                "========== ALL ADDRESSES PASSED =========="
+            );
+
+            const addresses =
+                wallets.map(
+                    w => w.publicKey
+                );
+
+            const solResult =
+                await rpc(
+                    "getMultipleAccounts",
+                    [
+                        addresses,
+                        {
+                            encoding: "base64"
+                        }
+                    ],
+                    `SOL BALANCES - ALL ${wallets.length} WALLETS`
+                );
+
+            const wsolResults =
+                await Promise.all(
+                    wallets.map(
+                        w =>
+                            w.index === "MAIN"
+                                ? null
+                                : rpc(
+                                    "getTokenAccountsByOwner",
+                                    [
+                                        w.publicKey,
+                                        {
+                                            mint: WSOL_MINT
+                                        },
+                                        {
+                                            encoding: "jsonParsed"
+                                        }
+                                    ],
+                                    `WALLET ${w.index} WSOL`
+                                )
+                    )
+                );
+
+            const cashbackWallets =
+                wallets.filter(
+                    w => w.cashbackATA
+                );
+
+            const cashbackResult =
+                await rpc(
+                    "getMultipleAccounts",
+                    [
+                        cashbackWallets.map(
+                            w => w.cashbackATA
+                        ),
+                        {
+                            encoding: "base64"
+                        }
+                    ],
+                    "ALL CASHBACK ATAs"
+                );
+
+            const cashbackMap =
+                new Map(
+                    cashbackWallets.map(
+                        (w, i) => [
+                            w.cashbackATA,
+                            decodeTokenAmount(
+                                cashbackResult.value[i]
+                            )
+                        ]
+                    )
+                );
+
+            const price =
+                await getSOLPrice();
+
+            solPrice.textContent =
+                formatUSD(price);
+
+            const closeStats =
+                await Promise.all(
+                    wallets.map(
+                        w =>
+                            w.index === "MAIN"
+                                ? null
+                                : getCloseStats(w)
+                    )
+                );
+
+            let grandTotalSOL = 0;
+
+            walletsContainer.innerHTML = "";
+
+            wallets.forEach(
+                (wallet, i) => {
+
+                    const account =
+                        solResult.value[i];
+
+                    const sol =
+                        account
+                            ? account.lamports / 1e9
+                            : 0;
 
                     let wsol = 0;
-                    const tokenResult = wsolResults[i];
 
-                    if (tokenResult && tokenResult.value) {
-                        for (const tokenAccount of tokenResult.value) {
-                            const amount = tokenAccount.account.data.parsed.info.tokenAmount.uiAmount;
-                            wsol += amount || 0;
+                    const tokenResult =
+                        wsolResults[i];
+
+                    if (tokenResult?.value) {
+
+                        for (
+                            const a
+                            of tokenResult.value
+                        ) {
+
+                            wsol +=
+                                a.account
+                                    .data
+                                    .parsed
+                                    .info
+                                    .tokenAmount
+                                    .uiAmount || 0;
                         }
                     }
 
-                    const cashback = wallet.cashbackATA
-                        ? (cashbackMap.get(wallet.cashbackATA) || 0)
-                        : 0;
+                    const cashback =
+                        wallet.cashbackATA
+                            ? cashbackMap.get(
+                                wallet.cashbackATA
+                            ) || 0
+                            : 0;
 
-                    const total = sol + wsol + cashback;
-                    grandTotalSOL += total;
+                    const isMain =
+                        wallet.index === "MAIN";
 
-                    const isMain = wallet.index === "MAIN";
-                    const statusClass = isMain
-                        ? "main"
-                        : wsol >= 0.5
-                            ? "safe"
-                            : "low";
+                    /*
+                     * CLOSES are claimable SOL from
+                     * empty token accounts.
+                     *
+                     * stats.sol is already:
+                     * account lamports / 1e9
+                     */
+                    const stats =
+                        isMain
+                            ? null
+                            : closeStats[i];
 
-                    const badge = isMain
-                        ? "PRIMARY"
-                        : wsol >= 0.5
-                            ? "WSOL OK"
-                            : "WSOL LOW";
+                    const closes =
+                        stats
+                            ? stats.sol
+                            : 0;
 
-                    const div = document.createElement("div");
-                    div.className = `wallet ${statusClass}`;
+                    /*
+                     * IMPORTANT:
+                     * Portfolio total includes:
+                     *
+                     * SOL
+                     * + WSOL
+                     * + CASHBACK
+                     * + CLOSES
+                     */
+                    const total =
+                        sol +
+                        wsol +
+                        cashback +
+                        closes;
+
+                    grandTotalSOL +=
+                        total;
+
+                    const statusClass =
+                        isMain
+                            ? "main"
+                            : wsol >= .5
+                                ? "safe"
+                                : "low";
+
+                    const badge =
+                        isMain
+                            ? "PRIMARY"
+                            : wsol >= .5
+                                ? "WSOL OK"
+                                : "WSOL LOW";
+
+                    const div =
+                        document.createElement(
+                            "div"
+                        );
+
+                    div.className =
+                        `wallet ${statusClass}`;
 
                     if (isMain) {
+
                         div.innerHTML = `
-                        <div class="wallet-top">
-                        <div class="wallet-name">MAIN WALLET</div>
-                        <div class="badge">PRIMARY</div>
-                        </div>
-                        <div class="pubkey">${wallet.publicKey}</div>
-                        <div class="balances">
-                        <div class="balance-box">
-                        <div class="balance-label">SOL</div>
-                        <div class="balance-value">${formatSOL(sol)}</div>
-                        </div>
-                        <div class="balance-box">
-                        <div class="balance-label">TOTAL</div>
-                        <div class="balance-value">${formatSOL(sol)}</div>
-                        </div>
-                        </div>
-                        <div class="wallet-usd">${formatUSD(sol * price)}</div>
+                            <div class="wallet-top">
+                                <div class="wallet-name">
+                                    MAIN WALLET
+                                </div>
+
+                                <div class="badge">
+                                    PRIMARY
+                                </div>
+                            </div>
+
+                            <div class="pubkey">
+                                ${wallet.publicKey}
+                            </div>
+
+                            <div class="balances">
+
+                                <div class="balance-box">
+                                    <div class="balance-label">
+                                        SOL
+                                    </div>
+
+                                    <div class="balance-value">
+                                        ${formatSOL(sol)}
+                                    </div>
+                                </div>
+
+                                <div class="balance-box">
+                                    <div class="balance-label">
+                                        TOTAL
+                                    </div>
+
+                                    <div class="balance-value">
+                                        ${formatSOL(total)}
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="wallet-usd">
+                                ${formatUSD(total * price)}
+                            </div>
                         `;
+
                     } else {
+
                         div.innerHTML = `
-                        <div class="wallet-top">
-                        <div class="wallet-name">WALLET ${wallet.index}</div>
-                        <div class="badge">${badge}</div>
-                        </div>
-                        <div class="pubkey">${wallet.publicKey}</div>
-                        <div class="balances">
-                        <div class="balance-box">
-                        <div class="balance-label">SOL</div>
-                        <div class="balance-value">${formatSOL(sol)}</div>
-                        </div>
-                        <div class="balance-box">
-                        <div class="balance-label">WSOL</div>
-                        <div class="balance-value">${formatSOL(wsol)}</div>
-                        </div>
-                        <div class="balance-box">
-                        <div class="balance-label">CASHBACK</div>
-                        <div class="balance-value">${formatSOL(cashback)}</div>
-                        </div>
-                        <div class="balance-box">
-                        <div class="balance-label">TOTAL</div>
-                        <div class="balance-value">${formatSOL(total)}</div>
-                        </div>
-                        </div>
-                        <div class="wallet-usd">${formatUSD(total * price)}</div>
+                            <div class="wallet-top">
+
+                                <div class="wallet-name">
+                                    WALLET ${wallet.index}
+                                </div>
+
+                                <div class="badge">
+                                    ${badge}
+                                </div>
+
+                            </div>
+
+                            <div class="pubkey">
+                                ${wallet.publicKey}
+                            </div>
+
+                            <div class="balances">
+
+                                <div class="balance-box">
+
+                                    <div class="balance-label">
+                                        SOL
+                                    </div>
+
+                                    <div class="balance-value">
+                                        ${formatSOL(sol)}
+                                    </div>
+
+                                </div>
+
+                                <div class="balance-box">
+
+                                    <div class="balance-label">
+                                        WSOL
+                                    </div>
+
+                                    <div class="balance-value">
+                                        ${formatSOL(wsol)}
+                                    </div>
+
+                                </div>
+
+                                <div class="balance-box">
+
+                                    <div class="balance-label">
+                                        CLOSES
+                                    </div>
+
+                                    <div class="balance-value">
+                                        ${formatSOL(closes)} SOL
+                                    </div>
+
+                                    <div class="closes-sub">
+                                        ${stats.accounts} accounts
+                                    </div>
+
+                                </div>
+
+                                <div class="balance-box">
+
+                                    <div class="balance-label">
+                                        CASHBACK
+                                    </div>
+
+                                    <div class="balance-value">
+                                        ${formatSOL(cashback)}
+                                    </div>
+
+                                </div>
+
+                                <div class="balance-box balance-total">
+
+                                    <div class="balance-label">
+                                        TOTAL
+                                    </div>
+
+                                    <div class="balance-value">
+                                        ${formatSOL(total)}
+                                    </div>
+
+                                </div>
+
+                                <div class="balance-usd">
+                                    ${formatUSD(total * price)}
+                                </div>
+
+                            </div>
                         `;
                     }
 
                     walletsContainer.appendChild(div);
-                });
+                }
+            );
 
-                grandTotal.textContent = `${formatSOL(grandTotalSOL)} SOL`;
-                usdTotal.textContent = formatUSD(grandTotalSOL * price);
-                status.textContent = `LIVE • Updated ${new Date().toLocaleTimeString()}`;
+            updatePortfolioOdometers(
+                grandTotalSOL,
+                grandTotalSOL * price
+            );
 
-            } catch (error) {
-                console.error(error);
-                status.textContent = `ERROR • ${error.message}`;
-            }
+            status.textContent =
+                `LIVE • Updated ${new Date().toLocaleTimeString()}`;
 
-            fetchBtn.disabled = false;
-            fetchBtn.textContent = "↻ REFRESH";
+        } catch (error) {
+
+            console.error(
+                "========== FETCH FAILED =========="
+            );
+
+            console.error(error);
+
+            status.textContent =
+                `ERROR • ${error.message}`;
         }
 
-        fetchBtn.addEventListener("click", fetchBalances);
-        fetchBalances();
-    </script>
+        fetchBtn.disabled = false;
+        fetchBtn.textContent = "↻ REFRESH";
+    }
+
+    function updatePortfolioOdometers(
+        sol,
+        usd
+    ) {
+
+        grandTotalOdometer.update(sol);
+        usdTotalOdometer.update(usd);
+    }
+
+    fetchBtn.addEventListener(
+        "click",
+        fetchBalances
+    );
+
+    fetchBalances();
+
+</script>
+
 </body>
 
 </html>
