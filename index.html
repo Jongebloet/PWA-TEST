@@ -869,15 +869,15 @@
                 solPrice.textContent =
                     formatUSD(price);
 
-                const closeStats =
-                    await Promise.all(
-                        wallets.map(
-                            w =>
-                                w.index === "MAIN"
-                                    ? null
-                                    : getCloseStats(w)
-                        )
+                const closeStats = [];
+
+                for (const wallet of wallets) {
+                    closeStats.push(
+                        wallet.index === "MAIN"
+                            ? null
+                            : await getCloseStats(wallet)
                     );
+                }
 
                 let grandTotalSOL = 0;
 
