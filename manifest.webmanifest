@@ -1,17 +1,17 @@
 {
-    "name": "SOL // COMMAND",
-    "short_name": "SOL",
-    "start_url": "./",
-    "display": "standalone",
-    "orientation": "portrait",
-    "background_color": "#080b12",
-    "theme_color": "#080b12",
-    "icons": [
-  {
-    "purpose": "maskable",
-    "sizes": "1200x1200",
-    "src": "maskable_icon.png",
-    "type": "image/png"
-  }
-]
+  "name": "SOL // COMMAND",
+  "short_name": "SOL",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080b12",
+  "theme_color": "#080b12",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
 }
